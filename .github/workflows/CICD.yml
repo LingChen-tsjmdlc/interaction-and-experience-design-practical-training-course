@@ -87,11 +87,11 @@ jobs:
             # 2. 导入镜像
             docker load < ${{ env.IMAGE_NAME }}-${{ steps.version.outputs.VERSION }}.tar.gz
 
-            # 3. 验证镜像
+            # 3. 验证镜像（可选）
             docker images | grep ${{ env.IMAGE_NAME }}
 
             # 4. 运行
-            docker run -d -p 3000:3000 --name frontend ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
+            docker run -d -p 3000:3000 --name interaction-and-experience-design-practical-training-course-frontend ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
             ```
 
             ### 在 docker-compose 中使用
