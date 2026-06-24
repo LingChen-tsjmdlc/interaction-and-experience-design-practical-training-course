@@ -64,3 +64,86 @@ body {
   animation: none;
   mix-blend-mode: normal;
 }
+
+/* ========================================
+   Markdown 文章渲染样式 (.md-article)
+   ======================================== */
+.md-article {
+  color: var(--foreground);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.md-article h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.md-article h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+.md-article h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+  color: color-mix(in srgb, var(--foreground) 85%, transparent);
+}
+
+.md-article h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.md-article p {
+  margin: 0.75rem 0;
+}
+
+.md-article blockquote {
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-left: 3px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+}
+
+.md-article blockquote p {
+  margin: 0.25rem 0;
+}
+
+.md-article ul,
+.md-article ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.md-article li {
+  margin: 0.25rem 0;
+}
+
+.md-article strong {
+  font-weight: 700;
+}
+
+.md-article hr {
+  border: none;
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  margin: 2rem 0;
+}
+
+.md-article code {
+  font-size: 0.85em;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+}

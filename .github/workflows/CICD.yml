@@ -1,0 +1,105 @@
+name: Build Frontend Image
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "版本号 (如 v0.1.0)"
+        required: true
+        default: "v0.1.0"
+
+env:
+  IMAGE_NAME: ai-job-impact
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # ---- 1. Checkout ----
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ---- 2. 取版本号 ----
+      - name: Set version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      # ---- 3. 前置检查：lint + type-check ----
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type-check
+        run: pnpm typecheck
+
+      # ---- 4. Docker 构建 ----
+      - name: Build Docker image
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          echo "=== 构建前端镜像 ${{ env.IMAGE_NAME }}:${VERSION} ==="
+          docker build -t ${{ env.IMAGE_NAME }}:${VERSION} .
+
+      # ---- 5. 导出 tar.gz ----
+      - name: Export image to tar.gz
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          echo "=== 导出镜像为 tar.gz ==="
+          docker save ${{ env.IMAGE_NAME }}:${VERSION} | gzip -9 > ${{ env.IMAGE_NAME }}-${VERSION}.tar.gz
+          ls -lh ${{ env.IMAGE_NAME }}-${VERSION}.tar.gz
+
+      # ---- 6. 上传到 GitHub Release ----
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          files: ${{ env.IMAGE_NAME }}-${{ steps.version.outputs.VERSION }}.tar.gz
+          body: |
+            ## Docker 镜像包
+
+            ### 导入方式
+            ```bash
+            # 1. 下载对应的 tar.gz 文件
+
+            # 2. 导入镜像
+            docker load < ${{ env.IMAGE_NAME }}-${{ steps.version.outputs.VERSION }}.tar.gz
+
+            # 3. 验证镜像
+            docker images | grep ${{ env.IMAGE_NAME }}
+
+            # 4. 运行
+            docker run -d -p 3000:3000 --name frontend ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
+            ```
+
+            ### 在 docker-compose 中使用
+            ```yaml
+            interaction-and-experience-design-practical-training-course-frontend:
+              image: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
+              ports:
+                - "3000:3000"
+            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
