@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "private": false,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "prepare": "husky",
     "dev": "next dev --turbopack",
